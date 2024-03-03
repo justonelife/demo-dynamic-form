@@ -1,0 +1,61 @@
+<form [formGroup]="form"
+    (ngSubmit)="onSubmit()">
+    <div class="grid grid-cols-12 gap-2 p-4 h-full">
+        <div class="col-span-12 flex flex-col">
+            <label class="text-slate-400">Username</label>
+            <input nz-input formControlName="username" type="text" />
+        </div>
+        <div class="col-span-12 flex flex-col">
+            <label class="text-slate-400">Name</label>
+            <input nz-input formControlName="name" type="text" />
+        </div>
+        <div class="col-span-6 flex flex-col">
+            <label class="text-slate-400">Gender</label>
+            <gender-selector formControlName="gender"></gender-selector>
+        </div>
+        <div class="col-span-6 flex flex-col">
+            <label class="text-slate-400">Married?</label>
+            <label nz-checkbox formControlName="married"></label>
+        </div>
+        <div class="col-span-6 flex flex-col">
+            <label class="text-slate-400">Age</label>
+            <input nz-input formControlName="age" type="number" />
+        </div>
+        <div class="col-span-6 flex flex-col">
+            <label class="text-slate-400">Hobbies</label>
+            <hobbies-selector formControlName="hobbies"></hobbies-selector>
+        </div>
+        <div class="col-span-12 flex flex-col">
+            <label class="text-slate-400">City</label>
+            <location-typeahead formControlName="city"></location-typeahead>
+        </div>
+        <div class="col-span-12 flex flex-col">
+            <label class="text-slate-400">Language</label>
+            <language-typeahead formControlName="language"></language-typeahead>
+        </div>
+        <div class="col-span-12 flex gap-2 justify-end mt-4">
+            <button nz-button nzType="default" type="button" nzDanger (click)="onPatch()">Patch Value</button>
+            <button nz-button nzType="default" type="button" (click)="onReset()">Reset</button>
+            <button nz-button 
+                nzType="primary" 
+                type="submit" 
+                class="bg-blue-400"
+                [disabled]="form.invalid">
+                Submit
+            </button>
+        </div>
+    </div>
+</form>
+
+<div class="p-4 flex gap-2">
+    <div class="border w-1/2 p-1"
+        [ngClass]="{ 'border-red-400': form.invalid, 'border-green-400': form.valid }">
+        <span class="font-bold">Current</span>
+        <pre>{{ form.value | json }}</pre>
+        <code>valid: {{ form.valid }}</code>
+    </div>
+    <div class="border w-1/2 p-1">
+        <span class="font-bold">Submit</span>
+        <pre>{{ submitValue | json }}</pre>
+    </div>
+</div>

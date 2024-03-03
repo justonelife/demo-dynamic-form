@@ -1,0 +1,15 @@
+import { Pipe, PipeTransform, SkipSelf, inject } from "@angular/core";
+import { TYPEAHEAD_SERVICE } from "../services/interfaces/typeahead-service.interface";
+import { Observable } from "rxjs";
+
+@Pipe({
+    name: 'typeaheadLabel',
+    standalone: true,
+})
+export class TypeaheadLabelPipe implements PipeTransform {
+    readonly typeaheadService = inject(TYPEAHEAD_SERVICE, { skipSelf: true });
+    
+    transform(value: string | number): Observable<string> {
+        return this.typeaheadService.fetchLabel(value);
+    }
+}

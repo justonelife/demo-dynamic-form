@@ -1,0 +1,9 @@
+<nz-select [(ngModel)]="state" class="w-full"
+    (ngModelChange)="onSelect()"
+    [nzDisabled]="disabled"
+    [nzPlaceHolder]="placeholder"
+    [nzMode]="mode">
+    @for (item of options; track $index) {
+        <nz-option [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
+    }
+</nz-select>

@@ -1,0 +1,42 @@
+<dynamic-form [fields]="FIELDS"
+    [resetTrigger]="resetTrigger$"
+    [patchTrigger]="patchTrigger$"
+    (onSubmit)="onSubmit($event)"
+    (onStatusChange)="onStatusChange($event)">
+    <ng-template dynamicFormTemplate="username" let-control>
+        <input nz-input type="text" [formControl]="control" />
+    </ng-template>
+    <ng-template dynamicFormTemplate="name" let-control>
+        <input nz-input type="text" [formControl]="control" />
+    </ng-template>
+    <ng-template dynamicFormTemplate="age" let-control>
+        <input nz-input type="number" [formControl]="control" />
+    </ng-template>
+    <ng-template dynamicFormTemplate="married" let-control>
+        <label nz-checkbox [formControl]="control"></label>
+    </ng-template>
+
+    <ng-template #control>
+        <div class="col-span-12 flex gap-2 justify-end mt-4">
+            <button nz-button nzType="default" type="button" nzDanger (click)="onPatch()">Patch Value</button>
+            <button nz-button nzType="default" type="button" (click)="onReset()">Reset</button>
+            <button nz-button 
+                nzType="primary" 
+                type="submit" 
+                class="bg-blue-400"
+                [disabled]="formStatus === 'INVALID'">
+                Submit
+            </button>
+        </div>
+    </ng-template>
+</dynamic-form>
+
+<div class="p-4 flex gap-2">
+    <div class="border w-1/2 p-1">
+        <span class="font-bold">Current</span>
+    </div>
+    <div class="border w-1/2 p-1">
+        <span class="font-bold">Submit</span>
+        <pre>{{ submitValue | json }}</pre>
+    </div>
+</div>

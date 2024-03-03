@@ -1,0 +1,14 @@
+<div class="w-full">
+    <input
+      [placeholder]="placeholder"
+      nz-input
+      [ngModel]="state | typeaheadLabel | async"
+      (input)="onInput($event)"
+      [nzAutocomplete]="auto"
+    />
+    <nz-autocomplete #auto>
+      @for (option of options; track $index) {
+        <nz-auto-option [nzValue]="option.value" (click)="onSelect(option.value)">{{ option.label }}</nz-auto-option>
+      }
+    </nz-autocomplete>
+</div>
