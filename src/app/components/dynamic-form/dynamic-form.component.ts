@@ -1,6 +1,5 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ContentChild, ContentChildren, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChildren, ViewContainerRef, inject } from "@angular/core";
-import { ControlContainer, ControlValueAccessor, FormControl, FormGroup, FormGroupDirective } from "@angular/forms";
-import { Subject } from "rxjs";
+import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, ContentChildren, Input, OnInit, QueryList, TemplateRef, ViewChildren, ViewContainerRef, inject } from "@angular/core";
+import { ControlContainer, FormControl, FormGroup, FormGroupDirective } from "@angular/forms";
 import { AppAny } from "../../app.models";
 import { DynamicFormResolverService } from "../../services/dynamic-form-resolver.service";
 import { DynamicFormTemplateDirective } from "./directives/dynamic-form-template.directive";
@@ -11,36 +10,31 @@ import { DYNAMIC_FORM_TYPE, DynamicFormItem, DynamicFormItemRef } from "./dynami
     templateUrl: './dynamic-form.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DynamicFormComponent implements AfterViewInit, AfterContentInit, OnDestroy, OnInit {
+export class DynamicFormComponent implements AfterContentInit, OnInit {
     protected readonly resolver = inject(DynamicFormResolverService);
-    protected readonly cd = inject(ChangeDetectorRef);
     protected readonly controlContainer = inject(ControlContainer);
     protected readonly formGroupDirective = inject(FormGroupDirective);
     
-    #destroy$: Subject<null> = new Subject()
-
     @Input({ required: true }) fields: DynamicFormItem[] = [];
 
-    @ContentChildren(DynamicFormTemplateDirective, { read: TemplateRef }) templates?: QueryList<TemplateRef<unknown>>;
+    @ContentChildren(DynamicFormTemplateDirective, { read: TemplateRef }) templates!: QueryList<TemplateRef<unknown>>;
     @ContentChildren(DynamicFormTemplateDirective) templateInputs?: QueryList<DynamicFormTemplateDirective>;
     @ContentChild('control') control?: TemplateRef<unknown>;
 
 
-    get keyToRef(): Record<string, TemplateRef<unknown> | null | undefined> {
+    get keyToRef(): Record<string, TemplateRef<unknown>> {
         if (!this.templates?.length || !this.templateInputs?.length) {
             return ({});
         }
 
-        let val: Record<string, TemplateRef<unknown> | null | undefined> = {};
+        let val: Record<string, TemplateRef<unknown>> = {};
         for (let i = 0; i < this.templates.length; i++) {
-            val[this.templateInputs.get(i)?.key as string] = this.templates.get(i);
+            val[this.templateInputs.get(i)?.key as string] = this.templates.get(i) as TemplateRef<unknown>;
         }
         return val;
     }
 
-    components: DynamicFormItemRef[] = [];
-
-    @ViewChildren('anchor', { read: ViewContainerRef }) anchors!: QueryList<ViewContainerRef>;
+    fieldRefs: DynamicFormItemRef[] = [];
 
     readonly DYNAMIC_FORM_TYPE = DYNAMIC_FORM_TYPE;
 
@@ -48,11 +42,6 @@ export class DynamicFormComponent implements AfterViewInit, AfterContentInit, On
 
     ngOnInit(): void {
         this.form = this.controlContainer.control as FormGroup;
-    }
-
-    ngOnDestroy(): void {
-        this.#destroy$.next(null);
-        this.#destroy$.complete();
     }
 
     ngAfterContentInit(): void {
@@ -68,60 +57,14 @@ export class DynamicFormComponent implements AfterViewInit, AfterContentInit, On
     }
 
     #computeComponents(): void {
-        this.components = this.fields.map(f => {
+        this.fieldRefs = this.fields.map(f => {
             return ({
                 ...f,
-                ref: f.type === DYNAMIC_FORM_TYPE.CUSTOM ? this.keyToRef[f.key] : null,
+                ref: this.keyToRef[f.key],
+                comp: this.resolver.resolve(f.type),
                 control: this.form.get(f.key) as FormControl,
             });
-        })
-    }
-
-    ngAfterViewInit(): void {
-        if (this.anchors.length) {
-            this.#renderSupportedComponent();
-        }
-    }
-
-    #renderSupportedComponent(): void {
-        this.fields
-            .filter(f => f.type !== DYNAMIC_FORM_TYPE.CUSTOM)
-            .forEach((f, index) => {
-                (this.resolver.resolve(f.type) as Promise<AppAny>).then(c => {
-                    const component: ComponentRef<ControlValueAccessor> | undefined = this.anchors.get(index)?.createComponent(c);
-                    const formControl: FormControl = <FormControl>this.form.get(f.key);
-
-                    if (component) {
-
-                        if (f.config) {
-                            setComponentConfigByInput(f.config, component);
-                        }
-                        component.instance.writeValue(formControl.value);
-                        component.instance.registerOnChange((value: AppAny) => {
-                            formControl.setValue(value);
-                        });
-                        formControl.valueChanges.subscribe({
-                            next: val => component?.instance.writeValue(val)
-                        });
-    
-                        component.instance.registerOnTouched(() => {
-                            formControl.markAsTouched();
-                        });
-                        formControl.registerOnDisabledChange(fn => component?.instance?.setDisabledState?.bind(fn));
-                    }
-                    
-                })
-            });
-
-        this.cd.markForCheck();
-
-        function setComponentConfigByInput(
-            config: { [key: string]: any }, 
-            componentRef: ComponentRef<ControlValueAccessor>) {
-            for (const key in config) {
-                componentRef.setInput(key, config[key]);
-            }
-        }
+        });
     }
 
     onReset(): void {

@@ -1,6 +1,6 @@
+import { TemplateRef } from '@angular/core';
 import { FormControl, ValidatorFn } from '@angular/forms';
 import { AppAny } from '../../app.models';
-import { ComponentRef, TemplateRef } from '@angular/core';
 
 export enum DYNAMIC_FORM_TYPE {
     GENDER_SELECTOR,
@@ -48,6 +48,7 @@ export interface DynamicFormItem {
 }
 
 export interface DynamicFormItemRef extends DynamicFormItem {
-    ref: TemplateRef<unknown> | null | undefined;
+    ref: TemplateRef<unknown>;
+    comp?: Promise<AppAny>;
     control: FormControl;
 }

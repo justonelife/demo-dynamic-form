@@ -8,7 +8,7 @@ import { AppAny } from "../app.models";
 export class DynamicFormResolverService {
     #resolver = DynamicFormResolver.getInstace();
 
-    resolve(type: DYNAMIC_FORM_TYPE): Promise<AppAny> | void {
+    resolve(type: DYNAMIC_FORM_TYPE): Promise<AppAny> | undefined {
         switch (type) {
             case DYNAMIC_FORM_TYPE.GENDER_SELECTOR:
                 return this.#resolver.genderSelector();
@@ -18,6 +18,8 @@ export class DynamicFormResolverService {
                 return this.#resolver.locationTypeahead();
             case DYNAMIC_FORM_TYPE.LANGUAGE_TYPEAHEAD:
                 return this.#resolver.languageTypeahead();
+            default:
+                return undefined;
         }
     }
 }
