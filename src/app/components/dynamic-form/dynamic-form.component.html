@@ -1,5 +1,5 @@
 <form [formGroup]="form"
-    (ngSubmit)="onSubmit()">
+    (ngSubmit)="onSubmit($event)">
     <div class="grid grid-cols-12 gap-2 p-4 h-full">
         @for (component of components; track $index) {
             <div class="flex flex-col"

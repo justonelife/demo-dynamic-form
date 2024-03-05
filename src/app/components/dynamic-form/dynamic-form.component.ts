@@ -1,29 +1,25 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ContentChild, ContentChildren, EventEmitter, Input, OnDestroy, Output, QueryList, TemplateRef, ViewChildren, ViewContainerRef, inject } from "@angular/core";
-import { DYNAMIC_FORM_TYPE, DynamicFormItem, DynamicFormItemRef } from "./dynamic-form.const";
+import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ContentChild, ContentChildren, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChildren, ViewContainerRef, inject } from "@angular/core";
+import { ControlContainer, ControlValueAccessor, FormControl, FormGroup, FormGroupDirective } from "@angular/forms";
+import { Subject } from "rxjs";
+import { AppAny } from "../../app.models";
 import { DynamicFormResolverService } from "../../services/dynamic-form-resolver.service";
 import { DynamicFormTemplateDirective } from "./directives/dynamic-form-template.directive";
-import { ControlValueAccessor, FormControl, FormControlStatus, FormGroup } from "@angular/forms";
-import { AppAny } from "../../app.models";
-import { Subject, distinctUntilChanged, takeUntil } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { DYNAMIC_FORM_TYPE, DynamicFormItem, DynamicFormItemRef } from "./dynamic-form.const";
 
 @Component({
     selector: 'dynamic-form',
     templateUrl: './dynamic-form.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DynamicFormComponent implements AfterViewInit, AfterContentInit, OnDestroy {
+export class DynamicFormComponent implements AfterViewInit, AfterContentInit, OnDestroy, OnInit {
     protected readonly resolver = inject(DynamicFormResolverService);
     protected readonly cd = inject(ChangeDetectorRef);
-
+    protected readonly controlContainer = inject(ControlContainer);
+    protected readonly formGroupDirective = inject(FormGroupDirective);
+    
     #destroy$: Subject<null> = new Subject()
 
-    @Output('onSubmit') submit = new EventEmitter(); 
-    @Output() onStatusChange = new EventEmitter<FormControlStatus>();
-
     @Input({ required: true }) fields: DynamicFormItem[] = [];
-    @Input('resetTrigger') resetTrigger$?: Subject<null>;
-    @Input('patchTrigger') patchTrigger$?: Subject<Record<any, AppAny>>;
 
     @ContentChildren(DynamicFormTemplateDirective, { read: TemplateRef }) templates?: QueryList<TemplateRef<unknown>>;
     @ContentChildren(DynamicFormTemplateDirective) templateInputs?: QueryList<DynamicFormTemplateDirective>;
@@ -50,15 +46,8 @@ export class DynamicFormComponent implements AfterViewInit, AfterContentInit, On
 
     form: FormGroup = new FormGroup({});
 
-    constructor() {
-        this.form.statusChanges
-            .pipe(
-                distinctUntilChanged(),
-                takeUntilDestroyed(),
-            )
-            .subscribe(val => {
-                this.onStatusChange.emit(val);
-            });
+    ngOnInit(): void {
+        this.form = this.controlContainer.control as FormGroup;
     }
 
     ngOnDestroy(): void {
@@ -69,31 +58,6 @@ export class DynamicFormComponent implements AfterViewInit, AfterContentInit, On
     ngAfterContentInit(): void {
         this.#addControlForCustomFieldOrFieldHasDefault();
         this.#computeComponents();
-        if (this.resetTrigger$) {
-            this.#listenResetTrigger();
-        }
-        if (this.patchTrigger$) {
-            this.#listenPatchTrigger();
-        }
-    }
-
-    #listenResetTrigger(): void {
-        this.resetTrigger$?.pipe(
-            takeUntil(this.#destroy$)
-        ).subscribe(_ => {
-            this.onReset();
-        });
-    }
-
-    #listenPatchTrigger(): void {
-        this.patchTrigger$?.pipe(
-            takeUntil(this.#destroy$)
-        ).subscribe(val => {
-            if (!val) {
-                return;
-            }
-            this.form.patchValue(val);
-        });
     }
 
     #addControlForCustomFieldOrFieldHasDefault(): void {
@@ -169,11 +133,10 @@ export class DynamicFormComponent implements AfterViewInit, AfterContentInit, On
         this.form.reset(defaultValues);
     }
 
-    onSubmit(): void {
+    onSubmit(event: Event): void {
         if (this.form.invalid) {
             return;
         }
-
-        this.submit.emit(this.form.value);
+        this.formGroupDirective.onSubmit(event);
     }
 }

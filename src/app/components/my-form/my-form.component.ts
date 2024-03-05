@@ -1,13 +1,12 @@
-import { JsonPipe } from "@angular/common";
+import { JsonPipe, NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component } from "@angular/core";
-import { FormControlStatus, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormControlStatus, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzCheckboxModule } from "ng-zorro-antd/checkbox";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { AppAny } from "../../app.models";
 import { DYNAMIC_FORM_TYPE, DynamicFormItem } from "../dynamic-form/dynamic-form.const";
 import { DynamicFormModule } from "../dynamic-form/dynamic-form.module";
-import { Subject } from "rxjs";
 import { GENDERS, HOBBIES } from "../../app.const";
 
 @Component({
@@ -21,15 +20,14 @@ import { GENDERS, HOBBIES } from "../../app.const";
         NzButtonModule,
         ReactiveFormsModule,
         JsonPipe,
+        NgClass,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MyFormComponent {
+    form: FormGroup = new FormGroup({});
 
     submitValue: Record<string, AppAny> = {};
-    formStatus?: FormControlStatus;
-    resetTrigger$: Subject<null> = new Subject();
-    patchTrigger$: Subject<Record<string, AppAny>> = new Subject();
 
     readonly FIELDS: DynamicFormItem[] = [
         { key: 'username', label: 'Username', type: DYNAMIC_FORM_TYPE.CUSTOM, klass: 'col-span-12', validators: [Validators.required, Validators.minLength(6)] },
@@ -42,16 +40,22 @@ export class MyFormComponent {
         { key: 'language', label: 'Language', type: DYNAMIC_FORM_TYPE.LANGUAGE_TYPEAHEAD, klass: 'col-span-12', validators: [Validators.required] },
     ];
 
-    onSubmit(event: Record<string, AppAny>): void {
-        this.submitValue = { ...event };
+    onSubmit(): void {
+        if (this.form.invalid) {
+            return;
+        }
+
+        this.submitValue = this.form.value;
     }
 
     onReset(): void {
-        this.resetTrigger$.next(null);
+        this.form.reset({
+            age: 18
+        });        
     }
 
     onPatch(): void {
-        this.patchTrigger$.next({
+        this.form.patchValue({
             username: 'banhbonglan',
             gender: GENDERS.MALE,
             age: 26,
@@ -59,9 +63,5 @@ export class MyFormComponent {
             city: 'hcm',
             language: 1
         });
-    }
-
-    onStatusChange(event: FormControlStatus): void {
-        this.formStatus = event;
     }
 }
