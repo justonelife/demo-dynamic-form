@@ -6,7 +6,7 @@
                 [class]="field.klass">
                 <label class="text-slate-400">{{ field.label }}</label>
                 @if (field.type !== DYNAMIC_FORM_TYPE.CUSTOM) {
-                    <ng-container *ngComponentOutlet="field.comp | async"></ng-container>
+                    <ng-container *ngComponentOutlet="field.comp | async; injector: field.control | dynamicControl"></ng-container>
                 } @else {
                     <ng-container *ngTemplateOutlet="field.ref; context: { $implicit: field.control }"></ng-container>
                 }

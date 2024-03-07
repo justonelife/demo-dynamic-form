@@ -5,6 +5,7 @@
       [ngModel]="state | typeaheadLabel | async"
       (input)="onInput($event)"
       [nzAutocomplete]="auto"
+      [disabled]="disabled"
     />
     <nz-autocomplete #auto>
       @for (option of options; track $index) {
@@ -12,3 +13,4 @@
       }
     </nz-autocomplete>
 </div>
+<!-- TODO: Try reselect with same value to occur a bug -->

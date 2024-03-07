@@ -1,6 +1,8 @@
-import { TemplateRef } from '@angular/core';
+import { InjectionToken, TemplateRef } from '@angular/core';
 import { FormControl, ValidatorFn } from '@angular/forms';
 import { AppAny } from '../../app.models';
+
+export const DYNAMIC_CONTROL = new InjectionToken<FormControl>('DYNAMIC_CONTROL')
 
 export enum DYNAMIC_FORM_TYPE {
     GENDER_SELECTOR,
@@ -45,6 +47,7 @@ export interface DynamicFormItem {
     value?: AppAny;
     validators?: ValidatorFn[];
     config?: Record<string, AppAny>;
+    disabled?: boolean;
 }
 
 export interface DynamicFormItemRef extends DynamicFormItem {

@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform, SkipSelf, inject } from "@angular/core";
-import { TYPEAHEAD_SERVICE } from "../services/interfaces/typeahead-service.interface";
+import { Pipe, PipeTransform, inject } from "@angular/core";
 import { Observable } from "rxjs";
+import { TYPEAHEAD_SERVICE } from "../services/interfaces/typeahead-service.interface";
 
 @Pipe({
     name: 'typeaheadLabel',

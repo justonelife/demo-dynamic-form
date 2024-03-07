@@ -52,7 +52,12 @@ export class DynamicFormComponent implements AfterContentInit, OnInit {
     #addControlForCustomFieldOrFieldHasDefault(): void {
         this.fields
         .forEach(f => {
-          this.form.addControl(f.key, new FormControl(f.value || f.defaultValue || null, f.validators?.length ? f.validators : null))
+          this.form.addControl(f.key, new FormControl({
+                value: f.value || f.defaultValue || null,
+                disabled: f.disabled,
+            }, 
+            f.validators?.length ? f.validators : null
+        ))
         }, this);
     }
 
@@ -68,6 +73,7 @@ export class DynamicFormComponent implements AfterContentInit, OnInit {
     }
 
     onReset(): void {
+        // Only work with default control
         const defaultValues: Record<string, AppAny> = this.fields.filter(f => {
             return f.defaultValue !== undefined;
         })
