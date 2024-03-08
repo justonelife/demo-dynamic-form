@@ -22,7 +22,7 @@ export class DynamicFormComponent implements AfterContentInit, OnInit {
     @Input({ alias: 'fields', required: true }) set _fields(v: DynamicFormItem[]) {
         this.fields = v;
         this.#addControlForCustomFieldOrFieldHasDefault();
-        this.#computeComponents();
+        this.#computeFieldRefs();
     }
 
     @ContentChildren(DynamicFormTemplateDirective, { read: TemplateRef }) templates!: QueryList<TemplateRef<unknown>>;
@@ -54,7 +54,7 @@ export class DynamicFormComponent implements AfterContentInit, OnInit {
 
     ngAfterContentInit(): void {
         this.#addControlForCustomFieldOrFieldHasDefault();
-        this.#computeComponents();
+        this.#computeFieldRefs();
     }
 
     #addControlForCustomFieldOrFieldHasDefault(): void {
@@ -74,7 +74,7 @@ export class DynamicFormComponent implements AfterContentInit, OnInit {
         }, this);
     }
 
-    #computeComponents(): void {
+    #computeFieldRefs(): void {
         this.fieldRefs = this.fields.map(f => {
             return ({
                 ...f,
