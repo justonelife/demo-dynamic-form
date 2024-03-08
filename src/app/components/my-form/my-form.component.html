@@ -1,12 +1,6 @@
 <form [formGroup]="form"
     (ngSubmit)="onSubmit()">
     <dynamic-form [fields]="FIELDS">
-        <ng-template dynamicFormTemplate="username" let-control>
-            <input nz-input type="text" [formControl]="control" />
-        </ng-template>
-        <ng-template dynamicFormTemplate="name" let-control>
-            <input nz-input type="text" [formControl]="control" />
-        </ng-template>
         <ng-template dynamicFormTemplate="age" let-control>
             <input nz-input type="number" [formControl]="control" />
         </ng-template>

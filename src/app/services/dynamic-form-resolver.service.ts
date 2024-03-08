@@ -18,6 +18,8 @@ export class DynamicFormResolverService {
                 return this.#resolver.locationTypeahead();
             case DYNAMIC_FORM_TYPE.LANGUAGE_TYPEAHEAD:
                 return this.#resolver.languageTypeahead();
+            case DYNAMIC_FORM_TYPE.TEXT_INPUT:
+                return this.#resolver.textInput();
             default:
                 return undefined;
         }

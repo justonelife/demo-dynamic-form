@@ -30,8 +30,8 @@ export class MyFormComponent {
     submitValue: Record<string, AppAny> = {};
 
     readonly FIELDS: DynamicFormItem[] = [
-        { key: 'username', label: 'Username', type: DYNAMIC_FORM_TYPE.CUSTOM, klass: 'col-span-12', validators: [Validators.required, Validators.minLength(6)] },
-        { key: 'name', label: 'Name', type: DYNAMIC_FORM_TYPE.CUSTOM, klass: 'col-span-12' },
+        { key: 'username', label: 'Username', type: DYNAMIC_FORM_TYPE.TEXT_INPUT, klass: 'col-span-12', validators: [Validators.required, Validators.minLength(6)] },
+        { key: 'name', label: 'Name', type: DYNAMIC_FORM_TYPE.TEXT_INPUT, klass: 'col-span-12' },
         { key: 'gender', label: 'Gender', type: DYNAMIC_FORM_TYPE.GENDER_SELECTOR, klass: 'col-span-6', validators: [Validators.required] },
         { key: 'married', label: 'Married?', type: DYNAMIC_FORM_TYPE.CUSTOM, klass: 'col-span-6' },
         { key: 'age', label: 'Age', type: DYNAMIC_FORM_TYPE.CUSTOM, klass: 'col-span-6', validators: [Validators.pattern(/\d+/)], defaultValue: 18 },

@@ -9,6 +9,7 @@ export enum DYNAMIC_FORM_TYPE {
     HOBBIES_SELECTOR,
     LANGUAGE_TYPEAHEAD,
     LOCATION_TYPEAHEAD,
+    TEXT_INPUT,
     CUSTOM,
 }
 
@@ -35,6 +36,10 @@ export class DynamicFormResolver {
 
     languageTypeahead(): Promise<AppAny> {
         return import('../input-components/language-typeahead/language-typeahead.component').then(c => c.LanguageTypeaheadComponent);
+    }
+
+    textInput(): Promise<AppAny> {
+        return import('../input-components/text-input/text-input.component').then(c => c.TextInputComponent);
     }
 }
 
