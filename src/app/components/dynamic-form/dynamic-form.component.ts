@@ -15,7 +15,15 @@ export class DynamicFormComponent implements AfterContentInit, OnInit {
     protected readonly controlContainer = inject(ControlContainer);
     protected readonly formGroupDirective = inject(FormGroupDirective);
     
-    @Input({ required: true }) fields: DynamicFormItem[] = [];
+    fields: DynamicFormItem[] = [];
+    get _fields(): DynamicFormItem[] {
+        return this.fields;
+    }
+    @Input({ alias: 'fields', required: true }) set _fields(v: DynamicFormItem[]) {
+        this.fields = v;
+        this.#addControlForCustomFieldOrFieldHasDefault();
+        this.#computeComponents();
+    }
 
     @ContentChildren(DynamicFormTemplateDirective, { read: TemplateRef }) templates!: QueryList<TemplateRef<unknown>>;
     @ContentChildren(DynamicFormTemplateDirective) templateInputs?: QueryList<DynamicFormTemplateDirective>;
@@ -52,7 +60,12 @@ export class DynamicFormComponent implements AfterContentInit, OnInit {
     #addControlForCustomFieldOrFieldHasDefault(): void {
         this.fields
         .forEach(f => {
-          this.form.addControl(f.key, new FormControl({
+            if (this.form.controls[f.key]) {
+                // Already existed
+                return;
+            }
+
+            this.form.addControl(f.key, new FormControl({
                 value: f.value || f.defaultValue || null,
                 disabled: f.disabled,
             }, 

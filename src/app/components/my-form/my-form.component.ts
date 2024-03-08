@@ -29,7 +29,7 @@ export class MyFormComponent {
 
     submitValue: Record<string, AppAny> = {};
 
-    readonly FIELDS: DynamicFormItem[] = [
+    fields: DynamicFormItem[] = [
         { key: 'username', label: 'Username', type: DYNAMIC_FORM_TYPE.TEXT_INPUT, klass: 'col-span-12', validators: [Validators.required, Validators.minLength(6)] },
         { key: 'name', label: 'Name', type: DYNAMIC_FORM_TYPE.TEXT_INPUT, klass: 'col-span-12' },
         { key: 'gender', label: 'Gender', type: DYNAMIC_FORM_TYPE.GENDER_SELECTOR, klass: 'col-span-6', validators: [Validators.required] },
@@ -37,7 +37,6 @@ export class MyFormComponent {
         { key: 'age', label: 'Age', type: DYNAMIC_FORM_TYPE.CUSTOM, klass: 'col-span-6', validators: [Validators.pattern(/\d+/)], defaultValue: 18 },
         { key: 'hobbies', label: 'Hobbies', type: DYNAMIC_FORM_TYPE.HOBBIES_SELECTOR, klass: 'col-span-6', validators: [Validators.minLength(2)] },
         { key: 'city', label: 'City', type: DYNAMIC_FORM_TYPE.LOCATION_TYPEAHEAD, klass: 'col-span-12' },
-        { key: 'language', label: 'Language', type: DYNAMIC_FORM_TYPE.LANGUAGE_TYPEAHEAD, klass: 'col-span-12', validators: [Validators.required] },
     ];
 
     onSubmit(): void {
@@ -61,7 +60,17 @@ export class MyFormComponent {
             age: 26,
             hobbies: [HOBBIES.FOOTBALL, HOBBIES.DRAWING],
             city: 'hcm',
-            language: 1
         });
+    }
+
+    onLoadMore(): void {
+        if (this.fields.length >= 8) {
+            return;
+        }
+        
+        this.fields = [
+            ...this.fields,
+            { key: 'language', label: 'Language', type: DYNAMIC_FORM_TYPE.LANGUAGE_TYPEAHEAD, klass: 'col-span-12', validators: [Validators.required] },
+        ];
     }
 }

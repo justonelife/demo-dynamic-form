@@ -1,6 +1,6 @@
 <form [formGroup]="form"
     (ngSubmit)="onSubmit()">
-    <dynamic-form [fields]="FIELDS">
+    <dynamic-form [fields]="fields">
         <ng-template dynamicFormTemplate="age" let-control>
             <input nz-input type="number" [formControl]="control" />
         </ng-template>
@@ -10,6 +10,7 @@
     
         <ng-template #control>
             <div class="col-span-12 flex gap-2 justify-end mt-4">
+                <button nz-button nzType="default" type="button" nzDanger (click)="onLoadMore()">Load More</button>
                 <button nz-button nzType="default" type="button" nzDanger (click)="onPatch()">Patch Value</button>
                 <button nz-button nzType="default" type="button" (click)="onReset()">Reset</button>
                 <button nz-button 

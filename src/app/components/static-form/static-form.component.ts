@@ -33,6 +33,7 @@ export class StaticFormComponent {
 
     readonly GENDER_OPTIONS = GENDER_OPTIONS;
     submitValue: Record<string, AppAny> = {};
+    showMore: boolean = false;
 
     form: FormGroup = new FormGroup({
         username: new FormControl<string>('', [Validators.required, Validators.minLength(6)]),
@@ -42,8 +43,14 @@ export class StaticFormComponent {
         age: new FormControl(18, [Validators.required, Validators.pattern(/\d+/)]),
         hobbies: new FormControl(null, [Validators.required, Validators.minLength(2)]),
         city: new FormControl(null),
-        language: new FormControl(null, Validators.required),
     });
+
+    onLoadMore(): void {
+        if (!this.showMore) {
+            this.form.addControl('language', new FormControl(null, Validators.required));
+            this.showMore = true;
+        }
+    }
 
     onSubmit(): void {
         if (this.form.invalid) {
@@ -60,7 +67,6 @@ export class StaticFormComponent {
             age: 26,
             hobbies: [HOBBIES.FOOTBALL, HOBBIES.DRAWING],
             city: 'hcm',
-            language: 1
         });
     }
 
